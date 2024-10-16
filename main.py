@@ -46,6 +46,16 @@ def register():
         email = request.form['email']
         password = request.form['password']
         
+        # Check if email or name already exists
+        existing_user = User.query.filter((User.email == email) | (User.name == name)).first()
+        
+        if existing_user:
+            if existing_user.email == email:
+                flash("Email is already taken. Please use a different email.", "error")
+            if existing_user.name == name:
+                flash("Username is already taken. Please choose a different username.", "error")
+            return redirect(url_for('register'))
+
         # Hash the password
         hashed_password = generate_password_hash(password)
 
@@ -56,10 +66,11 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful! You can now log in.", "success")
-        return redirect(url_for('login'))  # Redirect to login page after registration
+        flash("Registration successful! Welcome, {}!".format(name), "success")
+        return redirect(url_for('secrets', name=name))  # Pass the user's name to the secrets page
 
     return render_template("register.html")
+
 
 
 
