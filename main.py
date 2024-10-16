@@ -16,7 +16,7 @@ class Base(DeclarativeBase):
     pass
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db?timeout=10'
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -45,15 +45,11 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        
-        # Check if email or name already exists
+
+        # Check if the email or name already exists
         existing_user = User.query.filter((User.email == email) | (User.name == name)).first()
-        
         if existing_user:
-            if existing_user.email == email:
-                flash("Email is already taken. Please use a different email.", "error")
-            if existing_user.name == name:
-                flash("Username is already taken. Please choose a different username.", "error")
+            flash("This email or username is already registered. Please use a different one.", "error")
             return redirect(url_for('register'))
 
         # Hash the password
@@ -66,11 +62,10 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful! Welcome, {}!".format(name), "success")
-        return redirect(url_for('secrets', name=name))  # Pass the user's name to the secrets page
+        flash("Registration successful! You can now log in.", "success")
+        return redirect(url_for('secrets', name=name))  # Redirect to login page after registration
 
     return render_template("register.html")
-
 
 
 
@@ -81,7 +76,9 @@ def login():
 
 @app.route('/secrets')
 def secrets():
-    return render_template("secrets.html")
+    name = request.args.get('name')  # Get the name from query parameters
+    return render_template("secrets.html", name=name)  # Pass it to the template
+
 
 
 @app.route('/logout')
