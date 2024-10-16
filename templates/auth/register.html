@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="box">
+    <h1>Register</h1>
+    <form action="{{ url_for('register') }}" method="post">
+        <input type="text" name="name" placeholder="Name" required="required" />
+        <input type="email" name="email" placeholder="Email" required="required" />
+        <input type="password" name="password" placeholder="Password" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large" data-bs-toggle="modal" data-bs-target="#simpleModal">Sign me up.</button>
+    </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="simpleModal" tabindex="-1" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="simpleModalLabel">Registration Successful</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Your registration was successful! Welcome!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+         var myModal = new bootstrap.Modal(document.getElementById('simpleModal'));
+         myModal.show();
+     });
+</script>
+
+{% endblock %}

@@ -65,13 +65,13 @@ def register():
         flash("Registration successful! You can now log in.", "success")
         return redirect(url_for('secrets', name=name))  # Redirect to login page after registration
 
-    return render_template("register.html")
+    return render_template("auth/register.html")
 
 
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    return render_template("auth/login.html")
 
 
 @app.route('/secrets')
@@ -89,6 +89,11 @@ def logout():
 @app.route('/download')
 def download():
     pass
+
+@app.route('/test')
+def test():
+    name = request.args.get('name')
+    return f"The name is: {name}"
 
 
 if __name__ == "__main__":
