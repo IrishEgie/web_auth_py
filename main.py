@@ -16,7 +16,7 @@ class Base(DeclarativeBase):
     pass
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db?timeout=10'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -63,7 +63,7 @@ def register():
         db.session.commit()
 
         flash("Registration successful! You can now log in.", "success")
-        return redirect(url_for('secrets', name=name))  # Redirect to login page after registration
+        return redirect(url_for('secrets', name=name, registered=True))  # Redirect to login page after registration
 
     return render_template("auth/register.html")
 
