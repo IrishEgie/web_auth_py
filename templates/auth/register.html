@@ -10,21 +10,7 @@
         <button type="submit" class="btn btn-primary btn-block btn-large" data-bs-toggle="modal" data-bs-target="#simpleModal">Sign me up.</button>
     </form>
 </div>
-{% if message %}
-    <div id="alert-message" class="alert alert-{{ alert_type }}" role="alert">
-        {{ message }}
-    </div>
-
-    <script>
-        // Set a timeout to hide the alert after 3 seconds (3000 milliseconds)
-        setTimeout(function() {
-            var alert = document.getElementById('alert-message');
-            if (alert) {
-                alert.style.display = 'none'; // Hide the alert
-            }
-        }, 3000);
-    </script>
-{% endif %}
+{% include 'partials/alert_message.html' %}
 
 
 {% endblock %}

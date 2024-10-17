@@ -1,8 +1,11 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'partials/alert_message.html' %}
 
 <div class="box">
   <h1>Login</h1>
-  <!-- TODO: Use Message Flashing to display feedback to the user with a <p> -->
   <form action="{{ url_for('login') }}" method="post">
     <input type="text" name="email" placeholder="Email" required="required" />
     <input

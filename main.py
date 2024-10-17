@@ -23,11 +23,12 @@ db.init_app(app)
 # CREATE TABLE IN DB
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(1000))
+
 
 
 with app.app_context():
@@ -73,32 +74,66 @@ def register():
 
 
 
-@app.route('/login')
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'  # Redirect to login if not authenticated
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        # Fetch the user by email
+        user = User.query.filter_by(email=email).first()
+        
+        if user and check_password_hash(user.password, password):
+            login_user(user)  # Log the user in
+            welcome_message = f"Welcome, {user.name}! Thank you for logging in."
+            return redirect(url_for('secrets', name=user.name, welcome_message=welcome_message))  # Redirect to secrets page
+
+        else:
+            message = "Invalid email or password."
+            alert_type = 'danger'  # Set alert type for error
+            return render_template("auth/login.html", message=message, alert_type=alert_type)
+
     return render_template("auth/login.html")
 
 
+
+
 @app.route('/secrets')
+@login_required  
 def secrets():
     name = request.args.get('name')  # Get the name from query parameters
     welcome_message = request.args.get('welcome_message')
     return render_template("secrets.html", name=name, welcome_message=welcome_message)  # Pass it to the template
 
 
-
 @app.route('/logout')
+@login_required  # Ensure only logged-in users can access this route
 def logout():
-    pass
-
+    logout_user()  # Log the user out
+    return redirect(url_for('home'))  # Redirect to home page after logout
 
 @app.route('/download')
+@login_required  # Ensure only logged-in users can access this route
 def download():
-    pass
+    return send_from_directory('static/files', 'cheat_sheet.pdf')  # Serve the file for download
 
-@app.route('/test')
-def test():
-    name = request.args.get('name')
-    return f"The name is: {name}"
+@app.route('/not_allowed')
+def not_allowed():
+    return render_template("unauthorized.html")  # Render the unauthorized access template
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('not_allowed'))  # Redirect to not allowed page for unauthorized access
 
 
 if __name__ == "__main__":
