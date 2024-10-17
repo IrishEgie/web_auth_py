@@ -104,9 +104,6 @@ def login():
 
     return render_template("auth/login.html")
 
-
-
-
 @app.route('/secrets')
 @login_required  
 def secrets():

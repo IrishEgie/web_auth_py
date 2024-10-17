@@ -1,5 +1,10 @@
-{% extends "base.html" %} {% block content %}
+{% extends "components/base.html" %} {% block content %}
 
+{% if current_user.is_authenticated %}
+{% set message = "You are already logged in." %}
+{% set alert_type = "success" %}
+{% include 'components/alert_message.html' %}
+{% endif %}
 <div class="box">
   <h1>Flask Authentication</h1>
   <!-- TODO: Hide the Login/Registration buttons for logged-in users -->
