@@ -53,7 +53,7 @@ def register():
             return redirect(url_for('register'))
 
         # Hash the password
-        hashed_password = generate_password_hash(password)
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
 
         # Create a new user instance
         new_user = User(name=name, email=email, password=hashed_password)
