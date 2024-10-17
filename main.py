@@ -49,9 +49,12 @@ def register():
         # Check if the email or name already exists
         existing_user = User.query.filter((User.email == email) | (User.name == name)).first()
         if existing_user:
-            flash("This email or username is already registered. Please use a different one.", "error")
-            return redirect(url_for('register'))
+            message = "This email or username is already registered. Please use a different one."
+            alert_type = 'danger'  # Set alert type for error
+            return render_template("auth/register.html", message=message, alert_type=alert_type)
 
+        
+        
         # Hash the password
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
 
@@ -62,8 +65,9 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful! You can now log in.", "success")
-        return redirect(url_for('secrets', name=name, registered=True))  # Redirect to login page after registration
+        # Welcome message after successful registration
+        welcome_message = f"Welcome, {name}! Thank you for registering."
+        return redirect(url_for('secrets', name=name, welcome_message=welcome_message))  # Redirect to login page after registration
 
     return render_template("auth/register.html")
 
@@ -77,7 +81,8 @@ def login():
 @app.route('/secrets')
 def secrets():
     name = request.args.get('name')  # Get the name from query parameters
-    return render_template("secrets.html", name=name)  # Pass it to the template
+    welcome_message = request.args.get('welcome_message')
+    return render_template("secrets.html", name=name, welcome_message=welcome_message)  # Pass it to the template
 
 
 
